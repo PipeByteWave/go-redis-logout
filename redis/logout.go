@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
-	"log"
 	"time"
 )
 
@@ -15,20 +14,22 @@ type RedisClient struct {
 	ctx    context.Context
 }
 
-func InitRedis(addr string) {
+func InitRedis(addr string) error {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: addr,
 	})
 
 	_, err := rdb.Ping(context.Background()).Result()
 	if err != nil {
-		log.Fatal("Error conectando a Redis:", err)
+		return fmt.Errorf("error conectando a Redis: %w", err)
 	}
 
 	Redis = &RedisClient{
 		client: rdb,
 		ctx:    context.Background(),
 	}
+
+	return nil
 }
 
 func (r *RedisClient) SetValue(key, value string) error {
